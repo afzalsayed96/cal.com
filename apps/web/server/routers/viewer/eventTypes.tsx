@@ -87,7 +87,6 @@ const EventTypeUpdateInput = _EventTypeModel
       integration: true,
       externalId: true,
     }),
-    users: z.array(stringOrNumber).optional(),
     schedule: z.number().optional(),
   })
   .partial()
@@ -115,13 +114,9 @@ export const eventTypesRouter = createProtectedRouter()
       const { schedulingType, teamId, ...rest } = input;
       const userId = ctx.user.id;
 
-      const data: Prisma.EventTypeCreateInput = {
+      const data: Prisma.EventTypeUncheckedCreateInput = {
         ...rest,
-        users: {
-          connect: {
-            id: userId,
-          },
-        },
+        userId,
       };
 
       if (process.env.DAILY_API_KEY) {
@@ -142,11 +137,7 @@ export const eventTypesRouter = createProtectedRouter()
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
-        data.team = {
-          connect: {
-            id: teamId,
-          },
-        };
+        data.teamId = teamId;
         data.schedulingType = schedulingType;
       }
 
@@ -198,8 +189,7 @@ export const eventTypesRouter = createProtectedRouter()
   .mutation("update", {
     input: EventTypeUpdateInput.strict(),
     async resolve({ ctx, input }) {
-      const { schedule, periodType, locations, destinationCalendar, customInputs, users, id, ...rest } =
-        input;
+      const { schedule, periodType, locations, destinationCalendar, customInputs, id, ...rest } = input;
       assertValidUrl(input.successRedirectUrl);
       const data: Prisma.EventTypeUpdateInput = rest;
       data.locations = locations ?? undefined;
@@ -224,13 +214,6 @@ export const eventTypesRouter = createProtectedRouter()
           connect: {
             id: schedule,
           },
-        };
-      }
-
-      if (users) {
-        data.users = {
-          set: [],
-          connect: users.map((userId: number) => ({ id: userId })),
         };
       }
 

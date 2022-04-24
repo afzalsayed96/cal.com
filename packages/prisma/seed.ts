@@ -20,7 +20,7 @@ async function createUserAndEventType(opts: {
     timeZone?: string;
   };
   eventTypes: Array<
-    Prisma.EventTypeCreateInput & {
+    Prisma.EventTypeUncheckedCreateInput & {
       _bookings?: Prisma.BookingCreateInput[];
     }
   >;

@@ -213,6 +213,7 @@ const loggedInViewerRouter = createProtectedRouter()
       const typesRaw = await prisma.eventType.findMany({
         where: {
           userId: ctx.user.id,
+          teamId: null,
         },
         select: eventTypeSelect,
         orderBy: [
