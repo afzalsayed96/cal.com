@@ -185,7 +185,7 @@ export const eventTypesRouter = createProtectedRouter()
     })();
 
     if (!isAuthorized) {
-      console.warn(`User ${ctx.user.id} attempted to an access an event ${event.id} they do not own.`);
+      console.warn(`User ${ctx.user.id} attempted to access an event ${event.id} they do not own.`);
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
